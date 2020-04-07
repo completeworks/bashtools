@@ -14,7 +14,7 @@ set -o pipefail
 
 IFS=$'\n\t'
 
-download_withcache() {
+withcache() {
   local url="${1}"
   local output="${2}"
   local cache_duration_sec="${3:-$((24 * 3600))}"
@@ -54,7 +54,7 @@ CURL_OPTS=(
 # Downloads URL $1 to file $2 properly using If-Modified-Since and If-None-Match headers when supported by the server.
 # ETag reported by the server is stored in file $2.etag, so it should be kept around for proper re-use
 # It prints out the status code of the HTTP response to stdout and some debug information on stderr. If code 
-download_ifmodified() {
+ifmodified() {
   local url="${1}"
   local output="${2}"
   local etag_file="${3:-$(dirname "${output}")/.$(basename "${output}").etag}"
@@ -167,3 +167,5 @@ __show_time() {
       echo -n "${sec}"s
     fi
 }
+
+$@
