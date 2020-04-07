@@ -18,7 +18,7 @@ download_withcache() {
   local url="${1}"
   local output="${2}"
   local cache_duration_sec="${3:-$((24 * 3600))}"
-  local lastchecked_file="${4:-.${output}.lastchecked}"
+  local lastchecked_file="${4:-$(dirname "${output}")/.$(basename "${output}").lastchecked}"
 
   local lastchecked
   lastchecked="$(date +%s)";
@@ -57,6 +57,7 @@ CURL_OPTS=(
 download_ifmodified() {
   local url="${1}"
   local output="${2}"
+  local etag_file="${3:-$(dirname "${output}")/.$(basename "${output}").etag}"
   local code=0
 
   local header
@@ -64,9 +65,9 @@ download_ifmodified() {
   if [[ -f "${output}" ]]; then
     >&2 echo "Downloading (if required) ${url}"
     # use -o "${output}.tmp" and not -o "${output}" because in case of 304, output will be empty, and file trimmed
-    if [[ -f ".${output}.etag" ]]; then
+    if [[ -f "${etag_file}" ]]; then
       # do no specify -z here as some servers do not respect precedence of If-None-Match over If-Modified-Since
-      code="$(curl "${url}" "${CURL_OPTS[@]}" --dump-header "${header}" -o "${output}.tmp" --header "If-None-Match: $(head -n1 ".${output}.etag")")"
+      code="$(curl "${url}" "${CURL_OPTS[@]}" --dump-header "${header}" -o "${output}.tmp" --header "If-None-Match: $(head -n1 "${etag_file}")")"
     else 
       code="$(curl "${url}" "${CURL_OPTS[@]}" --dump-header "${header}" -o "${output}.tmp" -z "${output}")"
     fi
@@ -103,7 +104,7 @@ download_ifmodified() {
   local etag
   etag="$(grep -Ei 'etag *: *"?[^"]*"?' "${header}" | sed -Ee 's/[^:]*: *([^ ]*)/\1/g' | tail -n1 | tr -d '\r' | tr -d '\n')"
   if [[ -n "${etag}" ]]; then
-    echo -n "${etag}" > ".${output}.etag"
+    echo -n "${etag}" > "${etag_file}"
   fi
   rm "${header}"
 
