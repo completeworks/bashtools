@@ -8,9 +8,6 @@
 # SPDX-License-Identifier: EPL-2.0 OR MIT
 #*******************************************************************************
 
-IFNDEF="$(echo "${BASH_SOURCE[0]} ${BASH_SOURCE[1]}" | sha1sum | sed -E 's/^([^ ]*) .*$/import_\1/g')"
-if [ -z "${!IFNDEF:-}" ]; then : "${!IFNDEF:=1}" && export "${IFNDEF?}"
-
 # shellcheck disable=SC1090
 . "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/import.source"
 . "strict-mode.source"
@@ -158,5 +155,3 @@ __show_time() {
 
 # shellcheck disable=SC2068
 $@
-
-fi #IFNDEF
