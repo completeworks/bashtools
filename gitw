@@ -8,12 +8,13 @@
 # SPDX-License-Identifier: EPL-2.0 OR MIT
 #*******************************************************************************
 
-# Bash strict-mode
-set -o errexit
-set -o nounset
-set -o pipefail
+IFNDEF="$(echo "${BASH_SOURCE[0]}" | sha1sum | sed -E 's/^([^ ]*) .*$/import_\1/g')"
+if [ -z "${!IFNDEF:-}" ]; then : "${!IFNDEF:=1}" && export "${IFNDEF?}"
 
-IFS=$'\n\t'
+# shellcheck disable=SC1090
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/import.source"
+. "strict-mode.source"
+. "logger.source"
 
 sparsecheckout() {
 	local remote="${1}"
@@ -39,3 +40,5 @@ sparsecheckout() {
 
 # shellcheck disable=SC2068
 $@
+
+fi

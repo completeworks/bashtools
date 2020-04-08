@@ -7,5 +7,16 @@
 # SPDX-License-Identifier: EPL-2.0 OR MIT
 #*******************************************************************************
 
-PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")"):${PATH}"
-export PATH
+IFNDEF="$(echo "${BASH_SOURCE[0]}" | sha1sum | sed -E 's/^([^ ]*) .*$/import_\1/g')"
+if [ -z "${!IFNDEF:-}" ]; then : "${!IFNDEF:=1}" && export "${IFNDEF?}"
+
+# shellcheck disable=SC1090
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/import.source"
+. "strict-mode.source"
+
+download withcache https://raw.githubusercontent.com/idelsink/b-log/v1.2.0/b-log.sh "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/b-log.sh"
+
+# shellcheck disable=SC1090
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/b-log.sh"
+
+fi
