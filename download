@@ -32,10 +32,11 @@ withcache() {
     if [[ ${code} -lt 400 ]]; then
       date +%s > "${lastchecked_file}"
     fi
-    echo "${code}"
+    if [[ ${code} -ge 400 ]]; then
+      return 1
+    fi
   else
     DEBUG "File '%s' has been checked for update in the last %s, no remote call will be done." "$(realpath --relative-to="$(pwd)" "${output}")" "$(__show_time "${cache_duration_sec}")"
-    echo "304"
   fi
 }
 
@@ -62,7 +63,7 @@ ifmodified() {
   local header
   header="$(mktemp)"
   if [[ -f "${output}" ]]; then
-    >&2 echo "Downloading (if required) ${url}"
+    DEBUG "Downloading (if required) ${url}"
     # use -o "${output}.tmp" and not -o "${output}" because in case of 304, output will be empty, and file trimmed
     if [[ -f "${etag_file}" ]]; then
       # do no specify -z here as some servers do not respect precedence of If-None-Match over If-Modified-Since
@@ -93,7 +94,7 @@ ifmodified() {
     local curl_ret=${?}
     if [[ ${curl_ret} -eq 28 ]]; then
       WARN "connection timed out to ${url}"
-      code=328
+      code=428
     elif [[ ${code} -ge 400 ]]; then
       ERROR "unable to retrieve '%s' (status: %d)" "${url}" "${code}"
       rm -f "${output}"
@@ -107,8 +108,26 @@ ifmodified() {
   fi
   rm "${header}"
 
-  echo "${code}"
+  if [[ ${code} -ge 400 ]]; then
+    return 1
+  fi
 }
+
+if ! type -t DEBUG &> /dev/null; then
+  DEBUG() {
+    :
+  }
+fi
+if ! type -t WARN &> /dev/null; then
+  WARN() {
+    echo "WARN: $*"
+  }
+fi
+if ! type -t ERROR &> /dev/null; then
+  ERROR() {
+    echo "ERROR: $*"
+  }
+fi
 
 __show_time() {
     local num="${1}"
