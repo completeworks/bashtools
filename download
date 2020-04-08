@@ -168,4 +168,5 @@ __show_time() {
     fi
 }
 
+# shellcheck disable=SC2068
 $@
