@@ -29,7 +29,7 @@ withcache() {
 
   if [[ ! -f "${output}" ]] || [[ ${lastchecked} -le $(date +%s) ]]; then
     local code
-    code=$(download_ifmodified "${url}" "${output}")
+    code=$(ifmodified "${url}" "${output}")
     if [[ ${code} -lt 400 ]]; then
       date +%s > "${lastchecked_file}"
     fi
