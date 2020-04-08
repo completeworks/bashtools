@@ -37,7 +37,7 @@ withcache() {
     fi
     echo "${code}"
   else
-    log_debug "File '%s' has been checked for update in the last %s, no remote call will be done." "$(realpath --relative-to="$(pwd)" "${output}")" "$(__show_time "${cache_duration_sec}")"
+    DEBUG "File '%s' has been checked for update in the last %s, no remote call will be done." "$(realpath --relative-to="$(pwd)" "${output}")" "$(__show_time "${cache_duration_sec}")"
     echo "304"
   fi
 }
@@ -76,29 +76,29 @@ ifmodified() {
 
     local curl_ret=${?}
     if [[ ${curl_ret} -eq 28 ]]; then
-      log_warning "connection timed out to ${url}"
+      WARN "connection timed out to ${url}"
       code=328
     elif [[ ${code} -ge 400 ]]; then
       rm -f "${output}.tmp"
-      log_warning "unable (status: ${code}) to retrieve '${url}', will use cached file '$(realpath --relative-to="$(pwd)" "${output}")'"
+      WARN "unable (status: ${code}) to retrieve '${url}', will use cached file '$(realpath --relative-to="$(pwd)" "${output}")'"
       code=332
     elif [[ ${code} -eq 304 ]]; then
       rm -f "${output}.tmp"
-      log_debug "File '%s' is up to date" "$(realpath --relative-to="$(pwd)" "${output}")"
+      DEBUG "File '%s' is up to date" "$(realpath --relative-to="$(pwd)" "${output}")"
     else
       mv "${output}.tmp" "${output}"
-      log_debug "File '%s' has been updated" "$(realpath --relative-to="$(pwd)" "${output}")"
+      DEBUG "File '%s' has been updated" "$(realpath --relative-to="$(pwd)" "${output}")"
     fi 
   else
-    log_debug "Downloading %s" "${url}"
+    DEBUG "Downloading %s" "${url}"
     mkdir -p "$(dirname "${output}")"
     code="$(curl "${url}" "${CURL_OPTS[@]}" --dump-header "${header}" -o "${output}")"
     local curl_ret=${?}
     if [[ ${curl_ret} -eq 28 ]]; then
-      log_warning "connection timed out to ${url}"
+      WARN "connection timed out to ${url}"
       code=328
     elif [[ ${code} -ge 400 ]]; then
-      log_error "unable to retrieve '%s' (status: %d)" "${url}" "${code}"
+      ERROR "unable to retrieve '%s' (status: %d)" "${url}" "${code}"
       rm -f "${output}"
     fi
   fi
@@ -111,20 +111,6 @@ ifmodified() {
   rm "${header}"
 
   echo "${code}"
-}
-
-log_debug() {
-  if [[ -n "${DEBUG+x}" ]]; then
-    >&2 printf "DEBUG: %s\n%s" "${1}" "${@:2}"
-  fi
-}
-
-log_warning() {
-  >&2 printf "WARNING: %s\n%s" "${1}" "${@:2}"
-}
-
-log_error() {
-  >&2 printf "ERROR: %s\n%s" "${1}" "${@:2}"
 }
 
 __show_time() {
@@ -173,4 +159,4 @@ __show_time() {
 # shellcheck disable=SC2068
 $@
 
-fi
+fi #IFNDEF

@@ -18,5 +18,11 @@ download withcache https://raw.githubusercontent.com/idelsink/b-log/v1.2.0/b-log
 
 # shellcheck disable=SC1090
 . "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/b-log.sh"
-
+B_LOG --file /dev/stderr
+B_LOG --stdout false
+if [ -t 2 ]; then 
+  # only activate colors (prefix and suffix) if stderr is a terminal
+  B_LOG --file-prefix-enable --file-suffix-enable
 fi
+
+fi #IFNDEF
