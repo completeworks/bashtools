@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #*******************************************************************************
 # Copyright (c) 2020 Eclipse Foundation and others.
 # This program and the accompanying materials are made available
@@ -7,10 +8,15 @@
 # SPDX-License-Identifier: EPL-2.0 OR MIT
 #*******************************************************************************
 
-IFNDEF="$(echo "${BASH_SOURCE[0]}" | sha1sum | sed -E 's/^([^ ]*) .*$/import_\1/g')"
+IFNDEF="$(echo "${BASH_SOURCE[@]}" | sha1sum | sed -E 's/^([^ ]*) .*$/import_\1/g')"
 if [ -z "${!IFNDEF:-}" ]; then : "${!IFNDEF:=1}" && export "${IFNDEF?}"
 
-PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")"):${PATH}"
-export PATH
+# See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+set -o errexit
+set -o nounset
+set -o pipefail
 
-fi
+IFS=$'\n\t'
+export IFS
+
+fi #IFNDEF

@@ -9,9 +9,7 @@
 #*******************************************************************************
 
 # shellcheck disable=SC1090
-. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/import.source"
-. "strict-mode.source"
-. "logger.source"
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/_bootstrap.shsource"
 
 withcache() {
   local url="${1}"
@@ -36,7 +34,7 @@ withcache() {
       return 1
     fi
   else
-    DEBUG "File '%s' has been checked for update in the last %s, no remote call will be done." "$(realpath --relative-to="$(pwd)" "${output}")" "$(__show_time "${cache_duration_sec}")"
+    DEBUG "File '$(realpath --relative-to="$(pwd)" "${output}")' has been checked for update in the last $(__show_time "${cache_duration_sec}"), no remote call will be done."
   fi
 }
 
@@ -58,8 +56,8 @@ ifmodified() {
   local url="${1}"
   local output="${2}"
   local etag_file="${3:-$(dirname "${output}")/.$(basename "${output}").etag}"
+  
   local code=0
-
   local header
   header="$(mktemp)"
   if [[ -f "${output}" ]]; then
@@ -82,13 +80,13 @@ ifmodified() {
       code=332
     elif [[ ${code} -eq 304 ]]; then
       rm -f "${output}.tmp"
-      DEBUG "File '%s' is up to date" "$(realpath --relative-to="$(pwd)" "${output}")"
+      DEBUG "File '$(realpath --relative-to="$(pwd)" "${output}")' is up to date"
     else
       mv "${output}.tmp" "${output}"
-      DEBUG "File '%s' has been updated" "$(realpath --relative-to="$(pwd)" "${output}")"
+      DEBUG "File '$(realpath --relative-to="$(pwd)" "${output}")' has been updated"
     fi 
   else
-    DEBUG "Downloading %s" "${url}"
+    DEBUG "Downloading ${url}"
     mkdir -p "$(dirname "${output}")"
     code="$(curl "${url}" "${CURL_OPTS[@]}" --dump-header "${header}" -o "${output}")"
     local curl_ret=${?}
@@ -96,7 +94,7 @@ ifmodified() {
       WARN "connection timed out to ${url}"
       code=428
     elif [[ ${code} -ge 400 ]]; then
-      ERROR "unable to retrieve '%s' (status: %d)" "${url}" "${code}"
+      ERROR "unable to retrieve '${url}' (status: ${code})"
       rm -f "${output}"
     fi
   fi

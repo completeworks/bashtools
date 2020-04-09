@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+#*******************************************************************************
+# Copyright (c) 2020 Eclipse Foundation and others.
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License 2.0
+# which is available at http://www.eclipse.org/legal/epl-v20.html,
+# or the MIT License which is available at https://opensource.org/licenses/MIT.
+# SPDX-License-Identifier: EPL-2.0 OR MIT
+#*******************************************************************************
+#! /usr/bin/env bash
+
+IFNDEF="$(echo "${BASH_SOURCE[@]}" | sha1sum | sed -E 's/^([^ ]*) .*$/import_\1/g')"
+if [ -z "${!IFNDEF:-}" ]; then : "${!IFNDEF:=1}" && export "${IFNDEF?}"
+
+shopt -s extdebug
+set -o errtrace
+
+stacktrace() {
+  declare -i frame=0 argv_offset=0
+  IFS=" "
+  if shopt -q extdebug ; then
+    while : ; do
+      read -r -a caller_info <<< "$(caller $frame)"
+      declare -a argv=('')
+      declare -i argc=0 frame_argc=0
+      [[ $frame -lt ${#BASH_ARGC[@]} ]] && frame_argc=${BASH_ARGC[frame]}
+      for ((frame_argc--,argc=0; frame_argc >= 0; argc++,frame_argc--)); do
+        argv[argc]=${BASH_ARGV[argv_offset + frame_argc]}
+        case "${argv[argc]}" in
+          *[[:space:]]*) argv[argc]="'${argv[argc]}'" ;;
+        esac
+      done
+      if [[ ${#caller_info[@]} -gt 0 ]] ; then
+        printf "  at %s (%s:%s)\n" \
+        "${caller_info[1]}" "${caller_info[2]}" "${caller_info[0]}"  | ERROR
+      else
+        printf "  Started with '%s %s %s %s'\n" \
+          "$BASH" "-$-" "$0" "${argv[*]}" | ERROR
+        break
+      fi
+      argv_offset=$((argv_offset + BASH_ARGC[frame]))
+      frame=$((frame+1))
+    done
+  else
+    # Pauper's stack trace without extdebug's provision of BASH_ARG*
+    for fn in "${FUNCNAME[@]}"; do
+      ((frame)) && printf "  at %s (%s:%s)\n" \
+        "$fn" "${BASH_SOURCE[$frame]}" "${BASH_LINENO[$frame]}" | ERROR
+      frame=$((frame+1))
+    done
+    printf "  Started with '%s %s %s'\n" \
+          "$BASH" "-$-" "$0" | ERROR
+  fi
+}
+
+trap 'ERROR "Unexpected error (exit code: $?)"; stacktrace >&2;' ERR
+
+exit() {
+    trap - ERR
+    command exit "$@"
+}
+
+fi #IFNDEF

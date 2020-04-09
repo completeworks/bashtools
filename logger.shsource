@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #*******************************************************************************
 # Copyright (c) 2020 Eclipse Foundation and others.
 # This program and the accompanying materials are made available
@@ -7,19 +8,22 @@
 # SPDX-License-Identifier: EPL-2.0 OR MIT
 #*******************************************************************************
 
-IFNDEF="$(echo "${BASH_SOURCE[0]} ${BASH_SOURCE[1]}" | sha1sum | sed -E 's/^([^ ]*) .*$/import_\1/g')"
+IFNDEF="$(echo "${BASH_SOURCE[@]}" | sha1sum | sed -E 's/^([^ ]*) .*$/import_\1/g')"
 if [ -z "${!IFNDEF:-}" ]; then : "${!IFNDEF:=1}" && export "${IFNDEF?}"
 
-# shellcheck disable=SC1090
-. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/import.source"
-. "strict-mode.source"
+"$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/download" withcache https://raw.githubusercontent.com/completeworks/b-log/v1.2.1/b-log.sh "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/b-log.sh"
 
-download withcache https://raw.githubusercontent.com/idelsink/b-log/v1.2.0/b-log.sh "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/b-log.sh"
+: "${B_LOG_DEFAULT_TEMPLATE:="[@19:1@][@6:2@][@7@:@3:4@] @5@"}"
+_LOG_LEVEL="${LOG_LEVEL:-500}"
 
 # shellcheck disable=SC1090
 . "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/b-log.sh"
+
+LOG_LEVEL="${_LOG_LEVEL}"
+
 B_LOG --file /dev/stderr
 B_LOG --stdout false
+B_LOG --date-format "%Y-%m-%d %H:%M:%S"
 if [ -t 2 ]; then 
   # only activate colors (prefix and suffix) if stderr is a terminal
   B_LOG --file-prefix-enable --file-suffix-enable
