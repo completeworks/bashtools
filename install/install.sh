@@ -38,7 +38,7 @@ sparsecheckout() {
 }
 
 INFO() {
-	>&2 echo "INFO: " "$@"
+	>&2 echo "INFO: $@"
 }
 
 TRACE() {
