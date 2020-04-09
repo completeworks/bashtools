@@ -12,8 +12,8 @@ A collection of Bash scripts to be reused
 ```bash
 #! /usr/bin/env bash
 
-. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.bashtools/import.source"
-. "strict-mode.source"
+# shellcheck disable=SC1090
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.bashtools/bashtools"
 
 gitw sparsecheckout https://github.com/google/jsonnet.git .jsonnet
 ```
