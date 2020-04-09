@@ -20,21 +20,29 @@ sparsecheckout() {
 	local path="${2:-.}"
 	local branch="${3:-master}"
 	if [[ -d "${path}" ]]; then
-		>&2 echo "Fetching the tip of the branch '${branch}' from ${remote}..."
-	  git -C "${path}" fetch -q -f --no-tags --depth 1 "${remote}" "+refs/heads/${branch}:refs/remotes/origin/${branch}";
-		>&2 echo "Checkouting branch ${branch}..."
-	  git -C "${path}" checkout --no-progress -f "$(git -C "${path}" rev-parse "refs/remotes/origin/${branch}")";
+		INFO "Fetching the tip of the branch '${branch}' from ${remote}..."
+	  git -C "${path}" fetch -f --no-tags --depth 1 "${remote}" "+refs/heads/${branch}:refs/remotes/origin/${branch}" |& TRACE
+		INFO "Checkouting branch ${branch}..."
+	  git -C "${path}" checkout --no-progress -f "$(git -C "${path}" rev-parse "refs/remotes/origin/${branch}")" |& TRACE
 	else
-	  git init -q "${path}";
-		>&2 echo "Fetching the tip of the branch '${branch}' from ${remote}..."
-	  git -C "${path}" fetch -q --no-tags --depth 1 "${remote}" "+refs/heads/${branch}:refs/remotes/origin/${branch}";
-	  git -C "${path}" config remote.origin.url "${remote}";
-	  git -C "${path}" config --add remote.origin.fetch "+refs/heads/${branch}:refs/remotes/origin/${branch}";
-	  git -C "${path}" config core.sparsecheckout true;
-	  git -C "${path}" config advice.detachedHead false;
-		>&2 echo "Checkouting branch ${branch}..."
-	  git -C "${path}" checkout --no-progress -f "$(git -C "${path}" rev-parse "refs/remotes/origin/${branch}")";
+	  git init "${path}" |& TRACE
+		INFO "Fetching the tip of the branch '${branch}' from ${remote}..."
+	  git -C "${path}" fetch --no-tags --depth 1 "${remote}" "+refs/heads/${branch}:refs/remotes/origin/${branch}" |& TRACE
+	  git -C "${path}" config remote.origin.url "${remote}" |& TRACE
+	  git -C "${path}" config --add remote.origin.fetch "+refs/heads/${branch}:refs/remotes/origin/${branch}" |& TRACE
+	  git -C "${path}" config core.sparsecheckout true |& TRACE
+	  git -C "${path}" config advice.detachedHead false |& TRACE
+		INFO "Checkouting branch ${branch}..."
+	  git -C "${path}" checkout --no-progress -f "$(git -C "${path}" rev-parse "refs/remotes/origin/${branch}")" |& TRACE
 	fi
+}
+
+INFO() {
+	>&2 echo "INFO: " "$@"
+}
+
+TRACE() {
+	cat > /dev/null
 }
 
 sparsecheckout https://github.com/completeworks/bashtools.git .bashtools
