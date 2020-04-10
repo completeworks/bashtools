@@ -4,7 +4,7 @@ A collection of Bash scripts to be reused
 ## Install
 
 ```bash
-/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/completeworks/bashtools/master/install/install.sh)"
+/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/completeworks/bashtools/master/install.sh)"
 ```
 
 ## Usage (example)
