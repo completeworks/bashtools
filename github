@@ -11,6 +11,7 @@
 BTWD="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 # shellcheck disable=SC1090
 . "${BTWD}/_bootstrap.shsource"
+
 releaseinfo() {
   local owner="${1}"
   local repo="${2}"
