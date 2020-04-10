@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+#*******************************************************************************
+# Copyright (c) 2020 Eclipse Foundation and others.
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License 2.0
+# which is available at http://www.eclipse.org/legal/epl-v20.html,
+# or the MIT License which is available at https://opensource.org/licenses/MIT.
+# SPDX-License-Identifier: EPL-2.0 OR MIT
+#*******************************************************************************
+
+export LOG_LEVEL=-1
+BTWD="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+# shellcheck disable=SC1090
+. "${BTWD}/_bootstrap.shsource"
+releaseinfo() {
+  local owner="${1}"
+  local repo="${2}"
+  local versiontag="${3:-latest}"
+  local releaseinfo="${4:-}"
+
+  if [[ ! -f ${releaseinfo} ]]; then
+    releaseinfo=$(mktemp)
+    rm -f "${releaseinfo}"
+  fi
+
+  if [[ "${versiontag}" = "latest" ]]; then
+    "${BTWD}/download" withcache "https://api.github.com/repos/${owner}/${repo}/releases/${versiontag}" "${releaseinfo}"
+  else
+    "${BTWD}/download" withcache "https://api.github.com/repos/${owner}/${repo}/releases/tags/${versiontag}" "${releaseinfo}"
+  fi
+
+  if [[ -f "${releaseinfo}" ]]; then
+    cat "${releaseinfo}"
+    rm -f "${releaseinfo}"
+  else
+    ERROR "unable to retrieve release info for '${owner}/${repo}' version '${versiontag}'"
+    rm -f "${releaseinfo}"
+    return 1
+  fi
+}
+
+asset_url() {
+  local owner="${1}"
+  local repo="${2}"
+  local name_regex="${3}"
+  local versiontag="${4:-latest}"
+  releaseinfo "${owner}" "${repo}" "${versiontag}" | jq -r '.assets[] | select(.name | test("'"${name_regex}"'")) | .browser_download_url'
+}
+
+# shellcheck disable=SC2068
+$@
