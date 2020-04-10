@@ -48,7 +48,7 @@ asset_url() {
 }
 
 download_asset() {
-  local target=${1}
+  local target="${1}"
   local name_regex="${2}"
   local owner="${3}"
   local repo="${4}"
