@@ -40,11 +40,21 @@ releaseinfo() {
 }
 
 asset_url() {
-  local owner="${1}"
-  local repo="${2}"
-  local name_regex="${3}"
+  local name_regex="${1}"
+  local owner="${2}"
+  local repo="${3}"
   local versiontag="${4:-latest}"
   releaseinfo "${owner}" "${repo}" "${versiontag}" | jq -r '.assets[] | select(.name | test("'"${name_regex}"'")) | .browser_download_url'
+}
+
+download_asset() {
+  local target=${1}
+  local name_regex="${2}"
+  local owner="${3}"
+  local repo="${4}"
+  local versiontag="${5:-latest}"
+
+  "${BTWD}/download" withcache "$(asset_url "${name_regex}" "${owner}" "${repo}" "${versiontag}")" "${target}"
 }
 
 # shellcheck disable=SC2068
