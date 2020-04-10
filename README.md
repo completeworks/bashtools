@@ -17,3 +17,11 @@ A collection of Bash scripts to be reused
 
 gitw sparsecheckout https://github.com/google/jsonnet.git .jsonnet
 ```
+
+## Available commands
+
+Default brings logger support. See https://github.com/completeworks/b-log#examples for details. No need to source it, it's made available from the bashtools script.
+
+* `gitw sparsecheckout <remote> <path:.> <branch:master>`
+* `download withcache  <url> <output> <cache_duration_sec:24h> <lastchecked_file:${output}.lastchecked>`
+* `download ifmodified <url> <output> <etag_file:${output}.etag>`
