@@ -53,7 +53,7 @@ stacktrace() {
   fi
 }
 
-trap 'ERROR "Unexpected error (exit code: $?)"; stacktrace >&2;' ERR
+trap 'FATAL "Unexpected error (exit code: $?)"; stacktrace >&2;' ERR
 
 exit() {
     trap - ERR
