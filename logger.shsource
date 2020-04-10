@@ -11,13 +11,15 @@
 IFNDEF="$(echo "${BASH_SOURCE[@]}" | sha1sum | sed -E 's/^([^ ]*) .*$/import_\1/g')"
 if [ -z "${!IFNDEF:-}" ]; then : "${!IFNDEF:=1}" && export "${IFNDEF?}"
 
-"$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/download" withcache https://raw.githubusercontent.com/completeworks/b-log/v1.2.3/b-log.sh "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/b-log.sh"
+BTWD="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
+"${BTWD}/download" withcache https://raw.githubusercontent.com/completeworks/b-log/v1.2.3/b-log.sh "${BTWD}/b-log.sh"
 
 : "${B_LOG_DEFAULT_TEMPLATE:="[@19:1@][@6:2@][@7@:@3:4@] @5@"}"
 _LOG_LEVEL="${LOG_LEVEL:-500}"
 
 # shellcheck disable=SC1090
-. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/b-log.sh"
+. "${BTWD}/b-log.sh"
 
 LOG_LEVEL="${_LOG_LEVEL}"
 
