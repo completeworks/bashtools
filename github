@@ -8,7 +8,6 @@
 # SPDX-License-Identifier: EPL-2.0 OR MIT
 #*******************************************************************************
 
-export LOG_LEVEL=-1
 BTWD="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 # shellcheck disable=SC1090
 . "${BTWD}/_bootstrap.shsource"
