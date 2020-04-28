@@ -111,6 +111,11 @@ ifmodified() {
   fi
 }
 
+if ! type -t TRACE &> /dev/null; then
+  TRACE() {
+    :
+  }
+fi
 if ! type -t DEBUG &> /dev/null; then
   DEBUG() {
     :
