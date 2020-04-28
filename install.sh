@@ -22,7 +22,7 @@ sparsecheckout() {
 	if [[ -d "${path}" ]]; then
 		INFO "Fetching the tip of the branch '${branch}' from ${remote}..."
 	  git -C "${path}" fetch -f --no-tags --depth 1 "${remote}" "+refs/heads/${branch}:refs/remotes/origin/${branch}" |& TRACE
-		INFO "Checkouting branch ${branch}..."
+		INFO "Checking out branch ${branch}..."
 	  git -C "${path}" checkout --no-progress -f "$(git -C "${path}" rev-parse "refs/remotes/origin/${branch}")" |& TRACE
 	else
 	  git init "${path}" |& TRACE
@@ -32,7 +32,7 @@ sparsecheckout() {
 	  git -C "${path}" config --add remote.origin.fetch "+refs/heads/${branch}:refs/remotes/origin/${branch}" |& TRACE
 	  git -C "${path}" config core.sparsecheckout true |& TRACE
 	  git -C "${path}" config advice.detachedHead false |& TRACE
-		INFO "Checkouting branch ${branch}..."
+		INFO "Checking out ${branch}..."
 	  git -C "${path}" checkout --no-progress -f "$(git -C "${path}" rev-parse "refs/remotes/origin/${branch}")" |& TRACE
 	fi
 }
