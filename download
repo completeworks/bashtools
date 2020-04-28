@@ -111,7 +111,7 @@ ifmodified() {
   fi
 }
 
-if ! type -t TRACE &> /dev/null; then
+if ( ! type -t TRACE || [[ $(type -t TRACE) == "file" ]] ) &> /dev/null; then
   TRACE() {
     :
   }
