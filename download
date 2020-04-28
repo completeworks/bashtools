@@ -34,7 +34,7 @@ withcache() {
       return 1
     fi
   else
-    DEBUG "File '$(realpath --relative-to="$(pwd)" "${output}")' has been checked for update in the last $(__show_time "${cache_duration_sec}"), no remote call will be done."
+    TRACE "File '$(realpath --relative-to="$(pwd)" "${output}")' has been checked for update in the last $(__show_time "${cache_duration_sec}"), no remote call will be done."
   fi
 }
 
