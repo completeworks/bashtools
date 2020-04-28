@@ -25,3 +25,4 @@ Default brings logger support. See https://github.com/completeworks/b-log#exampl
 * `gitw sparsecheckout <remote> <path:.> <branch:master>`
 * `download withcache  <url> <output> <cache_duration_sec:24h> <lastchecked_file:${output}.lastchecked>`
 * `download ifmodified <url> <output> <etag_file:${output}.etag>`
+* `version compare <version1> <version2>`

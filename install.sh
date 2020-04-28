@@ -32,7 +32,7 @@ sparsecheckout() {
 	  git -C "${path}" config --add remote.origin.fetch "+refs/heads/${branch}:refs/remotes/origin/${branch}" |& TRACE
 	  git -C "${path}" config core.sparsecheckout true |& TRACE
 	  git -C "${path}" config advice.detachedHead false |& TRACE
-		INFO "Checking out ${branch}..."
+		INFO "Checking out branch ${branch}..."
 	  git -C "${path}" checkout --no-progress -f "$(git -C "${path}" rev-parse "refs/remotes/origin/${branch}")" |& TRACE
 	fi
 }

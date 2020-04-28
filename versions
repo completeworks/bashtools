@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+#*******************************************************************************
+# Copyright (c) 2020 Eclipse Foundation and others.
+# This program and the accompanying materials are made available
+# under the terms of the Eclipse Public License 2.0
+# which is available at http://www.eclipse.org/legal/epl-v20.html,
+# or the MIT License which is available at https://opensource.org/licenses/MIT.
+# SPDX-License-Identifier: EPL-2.0 OR MIT
+#*******************************************************************************
+
+# shellcheck disable=SC1090
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/_bootstrap.shsource"
+
+# from https://stackoverflow.com/a/4025065
+compare () {
+    if [[ "${1}" == "${2}" ]]; then
+        echo "0"
+        return
+    fi
+
+    local IFS=.
+    read -ra ver1 <<< "${1}"
+    read -ra ver2 <<< "${2}"
+
+    local i
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
+        ver1[i]=0
+    done
+
+    for ((i=0; i<${#ver1[@]}; i++)); do
+        if [[ -z ${ver2[i]:-} ]]; then
+            # fill empty fields in ver2 with zeros
+            ver2[i]=0
+        fi
+        if ((10#${ver1[i]} > 10#${ver2[i]})); then
+            echo "1"
+            return
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]})); then
+            echo "-1"
+            return
+        fi
+    done
+
+    echo "0"
+}
+
+# shellcheck disable=SC2068
+$@
