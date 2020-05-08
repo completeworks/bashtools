@@ -10,7 +10,7 @@
 #! /usr/bin/env bash
 
 IFNDEF="$(echo "${BASH_SOURCE[@]}" | sha1sum | sed -E 's/^([^ ]*) .*$/import_\1/g')"
-if [ -z "${!IFNDEF:-}" ]; then : "${!IFNDEF:=1}" && export "${IFNDEF?}"
+if [ -z "${!IFNDEF:-}" ]; then export "${IFNDEF}=1"
 
 shopt -s extdebug
 set -o errtrace

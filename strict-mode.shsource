@@ -9,7 +9,7 @@
 #*******************************************************************************
 
 IFNDEF="$(echo "${BASH_SOURCE[@]}" | sha1sum | sed -E 's/^([^ ]*) .*$/import_\1/g')"
-if [ -z "${!IFNDEF:-}" ]; then : "${!IFNDEF:=1}" && export "${IFNDEF?}"
+if [ -z "${!IFNDEF:-}" ]; then export "${IFNDEF}=1"
 
 # See http://redsymbol.net/articles/unofficial-bash-strict-mode/
 set -o errexit
